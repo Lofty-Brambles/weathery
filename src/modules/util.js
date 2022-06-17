@@ -122,10 +122,11 @@ function getIcon(code) {
 	return "";
 }
 
-function resolveTime(unix, full = true) {
+function resolveTime(unix, full = true, justDate = false) {
 	const UTCdateObj = fromUnixTime(unix);
 	const time = format(UTCdateObj, "p").toLowerCase();
 	const date = format(UTCdateObj, "PPPP");
+	if (justDate) return date;
 	return full ? `${date}<br>${time}` : time;
 }
 

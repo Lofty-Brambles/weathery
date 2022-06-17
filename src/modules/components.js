@@ -53,6 +53,7 @@ export default function components() {
 
 		const main = make("main");
 		main.appendChild(pillNav);
+		main.appendChild(body);
 		return main;
 	};
 
@@ -60,7 +61,7 @@ export default function components() {
 		document.head.appendChild(createIconsLink());
 		document.body.appendChild(createNav());
 		document.body.appendChild(createBody());
-		loadContent("initial");
 		loadinit();
+		loadContent("initial");
 	})();
 }

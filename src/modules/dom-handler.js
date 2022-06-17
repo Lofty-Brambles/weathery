@@ -1,5 +1,5 @@
 import swal from "sweetalert";
-import { geocodingData, loadStorage } from "./local-store";
+import { geocodingData, loadContent, loadStorage } from "./local-store";
 import { add, checkAvail, make } from "./util";
 
 export default function domHandlers() {
@@ -29,6 +29,7 @@ export default function domHandlers() {
 						lon: e.lon
 					});
 					localStorage.setItem("cities", JSON.stringify(cities));
+					loadContent("last");
 					swal({
 						title: "The city was added to your list!",
 						icon: "info"

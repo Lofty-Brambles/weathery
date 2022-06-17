@@ -128,38 +128,113 @@ function loadContent(type) {
 		const card4 = make("div");
 		add(card4, "card4");
 
-		card4.innerHTML = ``;
+		info.daily.forEach(el => {
+			card4.innerHTML += `<div><div>${resolveTime(
+				el.dt,
+				true,
+				true
+			)}</div><div>${(el.temp.max - 273.15).toFixed(0)} ℃</div><div>${
+				(el.temp.min - 273.15).toFixed(0)
+			} ℃</div><div>${getIcon(el.weather[0].icon)}</div></div>`;
+		});
 
-		if (info.alerts) {
-			const card5 = make("div");
-			add(card5, "card5");
-
-			card5.innerHTML = ``;
-
-			[card1, card2, card3, card4, card5].forEach(el => {
-				tabDiv.appendChild(el);
-			});
-		} else {
-			[card1, card2, card3, card4].forEach(el => {
-				tabDiv.appendChild(el);
-			});
-		}
+		[card1, card2, card3, card4].forEach(el => {
+			tabDiv.appendChild(el);
+		});
 		return tabDiv;
 	}
 
 	const data = JSON.parse(localStorage.getItem("cities"));
-	const mainTab = document.querySelector("main");
-	data.forEach(async el => {
-		const info = await weatherFetch(el);
-		info.place = el.place;
-		const tab = addinfo(info);
-		add(tab, "tab");
-		tab.setAttribute("id", el.place);
-		mainTab.appendChild(tab);
-	});
+	const mainTab = document.querySelector(".body");
+	mainTab.innerHTML = null;
+	const pillbar = document.querySelector(".pill-bar");
+	pillbar.innerHTML = null;
 
-	const con = type + 1;
-	return con;
+	function addPills(pos) {
+		const pill = function pill(act = false) {
+			const div = make("div");
+			add(div, "material-symbols-outlined");
+			if (act) {
+				div.classList.add("radio_button_checked");
+			} else {
+				div.classList.add("radio_button_unchecked");
+			}
+			div.textContent = act ? "radio_button_checked" : "radio_button_unchecked";
+			return div;
+		};
+		const nos = mainTab.childElementCount;
+		for (let i = 0; i < nos; i++) {
+			if ( (pos === "first") && (i === 0) ) {
+				pillbar.appendChild(pill(true));
+				break;
+			}
+			if ( (pos === "last") && (i === (nos - 1))) {
+				pillbar.appendChild(pill(true));
+				break;
+			}
+			pillbar.appendChild(pill());
+		}
+	}
+
+	function addArrowListener() {
+		document.querySelector(".arrowright").addEventListener("click", () => {
+			const next = mainTab.querySelector(".active");
+			if (next.nextElementSibling) {
+				next.classList.remove("active");
+				next.nextElementSibling.classList.add("active");
+
+				const nextPill = mainTab.querySelector(".radio_button_checked");
+				nextPill.classList.remove("radio_button_checked");
+				nextPill.classList.add("radio_button_unchecked");
+				nextPill.textContent = "radio_button_unchecked";
+				nextPill.nextElementSibling.classList.add("radio_button_checked");
+				nextPill.nextElementSibling.classList.remove("radio_button_unchecked");
+				nextPill.nextElementSibling.textContent = "radio_button_checked";
+			}
+		});
+
+		document.querySelector(".arrowleft").addEventListener("click", () => {
+			const prev = mainTab.querySelector(".active");
+			if (prev.prevElementSibling) {
+				prev.classList.remove("active");
+				prev.prevElementSibling.classList.add("active");
+
+				const prevPill = mainTab.querySelector(".radio_button_checked");
+				prevPill.classList.remove("radio_button_checked");
+				prevPill.classList.add("radio_button_unchecked");
+				prevPill.textContent = "radio_button_unchecked";
+				prevPill.prevElementSibling.classList.add("radio_button_checked");
+				prevPill.prevElementSibling.classList.remove("radio_button_unchecked");
+				prevPill.prevElementSibling.textContent = "radio_button_checked";
+			}
+		});
+	}
+
+	(async function exec() {
+		const promises = data.map(async el => {
+			const info = await weatherFetch(el);
+			info.place = el.place;
+			const tab = await addinfo(info);
+			add(tab, "tab");
+			tab.setAttribute("id", el.place.split(",")[0].replace(/,/i, "-"));
+			mainTab.appendChild(tab);
+		});
+
+		await Promise.all(promises);
+	
+		if (type === "initial") {
+			mainTab.firstElementChild.classList.add("active");
+		} else {
+			mainTab.lastElementChild.classList.add("active");
+		}
+	
+		if (type === "initial") {
+			addPills("first");
+		} else {
+			addPills("last");
+		}
+		addArrowListener();
+	})();
 }
 
 export { loadinit, loadStorage, geocodingData, loadContent };
