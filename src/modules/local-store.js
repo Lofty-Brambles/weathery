@@ -62,6 +62,26 @@ async function geocodingData(location) {
 }
 
 function loadContent(type) {
+	async function weatherFetch(data) {
+		const promise = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.lat}&lon=${data.lon}&exclude=minutely&appid=${process.env.WEATHER_KEY}`);
+		const dataPool = await promise.json();
+		return dataPool;
+	}
+
+	function addinfo(info) {
+		const tabDiv = make("div");
+		tabDiv.textContent = info;
+		return tabDiv;
+	}
+
+	const data = JSON.parse(localStorage.getItem("cities"));
+	const mainTab = document.querySelector("main");
+	data.forEach(async el => {
+		const info = await weatherFetch(el);
+		const tab = addinfo(info);
+		add(tab, "tab");
+		mainTab.appendChild(tab);
+	});
 
 	const con = type + 1;
 	return con;

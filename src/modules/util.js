@@ -31,8 +31,6 @@ function titlize(str) {
 		.join(" ");
 }
 
-function 
-
 function applyBg(code) {
 	if (code === "01d" || code === "02d") {
 		return `./../assets/clearday.jpg`;
