@@ -50,3 +50,21 @@
 	}
 
 }
+
+@mixin cardw($scale: 1) {
+
+	width: 6.5vw*$scale;
+
+	@media (max-width: 1200px) {
+		width: 8.5vw*$scale;
+	}
+
+	@media (max-width: 750px) {
+		width: 11vw*$scale;
+	}
+
+	@media (max-width: 600px) {
+		width: 12vw*$scale;
+	}
+
+}
