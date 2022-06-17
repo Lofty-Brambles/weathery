@@ -1,5 +1,7 @@
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const dotenv = require("dotenv");
 
 module.exports = {
 	entry: "./src/index.js",
@@ -17,7 +19,10 @@ module.exports = {
 					viewport: "width=device-width, initial-scale=1, shrink-to-fit=no"
 				}
 			}
-		)
+		),
+		new webpack.DefinePlugin({
+			"process.env": JSON.stringify(dotenv.config().parsed)
+		})
 	],
 	module: {
 		rules: [

@@ -4,6 +4,7 @@
   "description": "A weather app created by using the openweathermap API.",
   "main": "index.js",
   "scripts": {
+    "exec": "webpack --config webpack.dev.js",
     "test": "webpack --config webpack.dev.js --watch",
     "build": "webpack --config webpack.prod.js",
     "redeploy": "git push origin :gh-pages && git subtree push --prefix dist origin gh-pages"
@@ -40,5 +41,11 @@
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
     "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "date-fns": "^2.28.0",
+    "dotenv": "^16.0.1",
+    "sweetalert": "^2.1.2",
+    "tippy.js": "^6.3.7"
   }
 }

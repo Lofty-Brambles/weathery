@@ -1,0 +1,52 @@
+@mixin flex($dir: row, $just-cont: center, $alg-it: center, $wrp: nowrap) {
+
+	display: flex;
+	flex-flow: $dir $wrp;
+	justify-content: $just-cont;
+	align-items: $alg-it;
+
+}
+
+@mixin box($width, $height: $width) {
+
+	box-sizing: border-box;
+	width: $width;
+	height: $height;
+
+}
+
+@mixin setz($scale: 1) {
+
+	font-size: 1rem*$scale;
+
+	@media (max-width: 1700px) {
+		font-size: 0.9rem*$scale;
+	}
+
+	@media (max-width: 1200px) {
+		font-size: 0.8rem*$scale;
+	}
+
+	@media (max-width: 750px) {
+		font-size: 0.7rem*$scale;
+	}
+
+}
+
+@mixin dist() {
+
+	width: 50%;
+
+	@media (max-width: 1200px) {
+		width: 70%;
+	}
+
+	@media (max-width: 750px) {
+		width: 90%;
+	}
+
+	@media (max-width: 600px) {
+		width: 100%;
+	}
+
+}
