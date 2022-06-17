@@ -24,6 +24,15 @@ function extractFirst(str) {
 	return str.split(",")[0];
 }
 
+function titlize(str) {
+	return str
+		.split(" ")
+		.map(e => e.charAt(0).toUpperCase() + e.slice(1))
+		.join(" ");
+}
+
+function 
+
 function applyBg(code) {
 	if (code === "01d" || code === "02d") {
 		return `./../assets/clearday.jpg`;
@@ -47,13 +56,6 @@ function applyBg(code) {
 		return `./../assets/misty.jpg`;
 	}
 	return "";
-}
-
-function titlize(str) {
-	return str
-		.split(" ")
-		.map(e => e.charAt(0).toUpperCase() + e.slice(1))
-		.join(" ");
 }
 
 function resolveTime(unix, off) {

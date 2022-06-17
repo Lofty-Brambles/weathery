@@ -1,4 +1,4 @@
-import { loadinit } from "./local-store";
+import { loadContent, loadinit } from "./local-store";
 import { make, add } from "./util";
 
 export default function components() {
@@ -47,6 +47,10 @@ export default function components() {
 		[arrowleft, pillbar, arrowright].forEach(e => {
 			pillNav.appendChild(e);
 		});
+
+		const body = make("div");
+		add(body, "body");
+		loadContent("initial");
 
 		const main = make("main");
 		main.appendChild(pillNav);

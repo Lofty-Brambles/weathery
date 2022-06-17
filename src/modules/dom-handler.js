@@ -29,6 +29,10 @@ export default function domHandlers() {
 						lon: e.lon
 					});
 					localStorage.setItem("cities", JSON.stringify(cities));
+					swal({
+						title: "The city was added to your list!",
+						icon: "info"
+					});
 				} else {
 					swal({
 						title: "Hey, you already have that city!",

@@ -58,6 +58,16 @@ ul {
 	}
 }
 
+.tippy-box[data-theme~="popup"] {
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+
+	font-size: 1rem;
+	font-family: var.$fedora;
+	background-color: var.$dark;
+	color: var.$light;
+}
+
 /*
  * Adds the nav bar for the settings
  */
@@ -85,6 +95,7 @@ nav {
 		@include mix.setz(3);
 		padding: 0.7rem;
 		border-radius: 50%;
+		cursor: pointer;
 
 		&:hover {
 			background-color: rgba(var.$dark, 0.7);
@@ -166,6 +177,15 @@ main {
 			border-radius: 1rem;
 			font-family: var.$flower;
 			font-size: 1.5rem;
+
+			.del-btn {
+				cursor: pointer;
+				padding: 0.5rem;
+
+				&:hover {
+					background-color: rgba(var.$dark, 0.4);
+				}
+			}
 		}
 	}
 }

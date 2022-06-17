@@ -1,18 +1,23 @@
 import tippy from "tippy.js";
 import initData from "../init";
-import { extractFirst, make } from "./util";
+import { add, extractFirst, make } from "./util";
 
 function loadinit() {
-	localStorage.setItem("cities", JSON.stringify(initData()));
+	if ( !localStorage.getItem("cities") ) {
+		localStorage.setItem("cities", JSON.stringify(initData()));
+	}
 }
 
 function loadStorage(list) {
 	const createListItem = function createListItem(array, item) {
 		const li = make("li");
-		li.innerHTML = `<div>🔍 ${extractFirst(item.place)}</div>
-			<div class="material-symbols-outlined del-btn">delete</div>`;
+		li.innerHTML = `<div>🔍 ${extractFirst(item.place)}</div>`;
+		const div = make("div");
+		add(div, "material-symbols-outlined", "del-btn");
+		div.textContent = "delete";
+		li.appendChild(div);
 
-		li.querySelector(".del-btn").addEventListener(() => {
+		div.addEventListener("click", () => {
 			if (array.length > 1) {
 				const filteredArr = array.filter(
 					val => val.place !== item.place
@@ -23,6 +28,8 @@ function loadStorage(list) {
 				tippy(".del-btn", {
 					content: "Sorry, you need to keep atleast one city.",
 					trigger: "click",
+					zIndex: 10002,
+					theme: "popup"
 				});
 			}
 		});
@@ -30,7 +37,8 @@ function loadStorage(list) {
 		return li;
 	};
 
-	const itemArray = [];
+	// eslint-disable-next-line no-param-reassign
+	list.innerHTML = null;
 	const data = JSON.parse(localStorage.getItem("cities"));
 	if (!data) {
 		const li = make("li");
@@ -38,8 +46,8 @@ function loadStorage(list) {
 		list.appendChild(li);
 	} else {
 		const liArray = [];
-		itemArray.forEach(el => {
-			liArray.push(createListItem(itemArray, el));
+		data.forEach(el => {
+			liArray.push(createListItem(data, el));
 		});
 		liArray.forEach(el => {
 			list.appendChild(el);
@@ -53,4 +61,10 @@ async function geocodingData(location) {
 	return dataArray;
 }
 
-export { loadinit, loadStorage, geocodingData };
+function loadContent(type) {
+
+	const con = type + 1;
+	return con;
+}
+
+export { loadinit, loadStorage, geocodingData, loadContent };
