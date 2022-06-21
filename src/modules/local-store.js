@@ -1,6 +1,15 @@
 import tippy from "tippy.js";
+import Image from "../assets/loading.gif";
 import initData from "../init";
-import { add, extractFirst, getIcon, make, resolveTime, titlize } from "./util";
+import {
+	add,
+	applyBg,
+	extractFirst,
+	getIcon,
+	make,
+	resolveTime,
+	titlize,
+} from "./util";
 
 function loadinit() {
 	if (!localStorage.getItem("cities")) {
@@ -24,6 +33,8 @@ function loadStorage(list) {
 				);
 				localStorage.setItem("cities", JSON.stringify(filteredArr));
 				loadStorage(document.querySelector(".manage-popup > ul"));
+				// eslint-disable-next-line no-use-before-define
+				loadContent("initial");
 			} else {
 				tippy(".del-btn", {
 					content: "Sorry, you need to keep atleast one city.",
@@ -62,25 +73,25 @@ async function geocodingData(location) {
 }
 
 function loadContent(type) {
-	async function weatherFetch(data) {
+	async function weatherFetch(data, unit) {
 		const promise = await fetch(
-			`https://api.openweathermap.org/data/2.5/onecall?lat=${data.lat}&lon=${data.lon}&exclude=minutely&appid=${process.env.WEATHER_KEY}`
+			`https://api.openweathermap.org/data/2.5/onecall?lat=${data.lat}&lon=${data.lon}&exclude=minutely&units=${unit[1]}&appid=${process.env.WEATHER_KEY}`
 		);
 		const dataPool = await promise.json();
 		return dataPool;
 	}
 
-	function addinfo(info) {
+	function addinfo(info, unit) {
 		const tabDiv = make("div");
 
 		const card1 = make("div");
 		add(card1, "card1");
 
-		const temp = (+info.current.temp - 273.15).toFixed(0);
+		const temp = (+info.current.temp).toFixed(0);
 		const { icon } = info.current.weather[0];
 		const weather = titlize(info.current.weather[0].description);
 
-		card1.innerHTML = `<div><span class="temp">${temp}</span> <span class="unit">℃</span></div>
+		card1.innerHTML = `<div><span class="temp">${temp}</span> <span class="unit">${unit[0]}</span></div>
 			<div>${resolveTime(info.current.dt)}</div>
 			<div>${getIcon(icon)} ${weather}</div>
 			<div>${extractFirst(info.place)}</div>`;
@@ -88,14 +99,15 @@ function loadContent(type) {
 		const card2 = make("div");
 		add(card2, "card2");
 
-		const feelTemp = (+info.current.feels_like - 273.15).toFixed(0);
+		const feelTemp = (+info.current.feels_like).toFixed(0);
 		const visUnit = (+info.current.visibility / 1000).toFixed(0);
+		const wspeed = unit[1] === "metric" ? "meters/sec" : "miles/hr";
 
 		card2.innerHTML = `<div><div class="material-symbols-outlined">brightness_6</div><div>Sunrise / Sunset</div><div>${resolveTime(
 			info.current.sunrise,
 			false
 		)} / ${resolveTime(info.current.sunset, false)}</div></div>
-			<div><div class="material-symbols-outlined">thermostat</div><div>Feels like</div><div>${feelTemp} ℃</div></div>
+			<div><div class="material-symbols-outlined">thermostat</div><div>Feels like</div><div>${feelTemp} ${unit[0]}</div></div>
 			<div><div class="material-symbols-outlined">tire_repair</div><div>Pressure</div><div>${
 				info.current.pressure
 			} hPa</div></div>
@@ -111,7 +123,7 @@ function loadContent(type) {
 			<div><div class="material-symbols-outlined">visibility</div><div>Visibility</div><div>${visUnit} km</div></div>
 			<div><div class="material-symbols-outlined">air</div><div>Wind Speed</div><div>${
 				info.current.wind_speed
-			}</div></div>`;
+			} ${wspeed}</div></div>`;
 
 		const card3 = make("div");
 		add(card3, "card3");
@@ -120,7 +132,7 @@ function loadContent(type) {
 			card3.innerHTML += `<div><div>${resolveTime(
 				el.dt,
 				false
-			)}</div><div>${(el.temp - 273.15).toFixed(0)} ℃</div><div>${getIcon(
+			)}</div><div>${(el.temp).toFixed(0)} ${unit[0]}</div><div>${getIcon(
 				el.weather[0].icon
 			)}</div></div>`;
 		});
@@ -133,9 +145,11 @@ function loadContent(type) {
 				el.dt,
 				true,
 				true
-			)}</div><div>${(el.temp.max - 273.15).toFixed(0)} ℃</div><div>${
-				(el.temp.min - 273.15).toFixed(0)
-			} ℃</div><div>${getIcon(el.weather[0].icon)}</div></div>`;
+			)}</div><div>${(el.temp.max).toFixed(0)} ${unit[0]}</div><div>${(
+				el.temp.min
+			).toFixed(0)} ℃</div><div>${getIcon(
+				el.weather[0].icon
+			)}</div></div>`;
 		});
 
 		[card1, card2, card3, card4].forEach(el => {
@@ -149,30 +163,31 @@ function loadContent(type) {
 	mainTab.innerHTML = null;
 	const pillbar = document.querySelector(".pill-bar");
 	pillbar.innerHTML = null;
+	const unit = JSON.parse(localStorage.getItem("unit")) ?? ["℃", "metric"];
 
 	function addPills(pos) {
 		const pill = function pill(act = false) {
 			const div = make("div");
 			add(div, "material-symbols-outlined");
 			if (act) {
-				div.classList.add("radio_button_checked");
+				div.classList.add("checked");
 			} else {
-				div.classList.add("radio_button_unchecked");
+				div.classList.add("unchecked");
 			}
-			div.textContent = act ? "radio_button_checked" : "radio_button_unchecked";
+			div.textContent = act
+				? "radio_button_checked"
+				: "radio_button_unchecked";
 			return div;
 		};
 		const nos = mainTab.childElementCount;
 		for (let i = 0; i < nos; i++) {
-			if ( (pos === "first") && (i === 0) ) {
+			if (pos === "first" && i === 0) {
 				pillbar.appendChild(pill(true));
-				break;
-			}
-			if ( (pos === "last") && (i === (nos - 1))) {
+			} else if (pos === "last" && i === nos - 1) {
 				pillbar.appendChild(pill(true));
-				break;
+			} else {
+				pillbar.appendChild(pill());
 			}
-			pillbar.appendChild(pill());
 		}
 	}
 
@@ -182,52 +197,75 @@ function loadContent(type) {
 			if (next.nextElementSibling) {
 				next.classList.remove("active");
 				next.nextElementSibling.classList.add("active");
+				document.querySelector(
+					"html"
+				).style.background = `url(${next.nextElementSibling.dataset.bg})`;
 
-				const nextPill = mainTab.querySelector(".radio_button_checked");
-				nextPill.classList.remove("radio_button_checked");
-				nextPill.classList.add("radio_button_unchecked");
+				const nextPill = document.querySelector(".checked");
+				nextPill.classList.remove("checked");
+				nextPill.classList.add("unchecked");
 				nextPill.textContent = "radio_button_unchecked";
-				nextPill.nextElementSibling.classList.add("radio_button_checked");
-				nextPill.nextElementSibling.classList.remove("radio_button_unchecked");
-				nextPill.nextElementSibling.textContent = "radio_button_checked";
+				nextPill.nextElementSibling.classList.add("checked");
+				nextPill.nextElementSibling.classList.remove("unchecked");
+				nextPill.nextElementSibling.textContent =
+					"radio_button_checked";
 			}
 		});
 
 		document.querySelector(".arrowleft").addEventListener("click", () => {
 			const prev = mainTab.querySelector(".active");
-			if (prev.prevElementSibling) {
+			if (prev.previousElementSibling) {
 				prev.classList.remove("active");
-				prev.prevElementSibling.classList.add("active");
+				prev.previousElementSibling.classList.add("active");
+				document.querySelector(
+					"html"
+				).style.background = `url(${prev.previousElementSibling.dataset.bg})`;
 
-				const prevPill = mainTab.querySelector(".radio_button_checked");
-				prevPill.classList.remove("radio_button_checked");
-				prevPill.classList.add("radio_button_unchecked");
+				const prevPill = document.querySelector(".checked");
+				prevPill.classList.remove("checked");
+				prevPill.classList.add("unchecked");
 				prevPill.textContent = "radio_button_unchecked";
-				prevPill.prevElementSibling.classList.add("radio_button_checked");
-				prevPill.prevElementSibling.classList.remove("radio_button_unchecked");
-				prevPill.prevElementSibling.textContent = "radio_button_checked";
+				prevPill.previousElementSibling.classList.add("checked");
+				prevPill.previousElementSibling.classList.remove("unchecked");
+				prevPill.previousElementSibling.textContent =
+					"radio_button_checked";
 			}
 		});
 	}
 
 	(async function exec() {
+		const img = make("img");
+		img.src = Image;
+		img.style.padding = "2rem";
+		img.style.width = "18rem";
+		img.style.height = "10rem";
+		mainTab.appendChild(img);
+
 		const promises = data.map(async el => {
-			const info = await weatherFetch(el);
+			const info = await weatherFetch(el, unit);
 			info.place = el.place;
-			const tab = await addinfo(info);
+			const tab = await addinfo(info, unit);
 			add(tab, "tab");
+			tab.dataset.bg = applyBg(info.current.weather[0].icon);
 			tab.setAttribute("id", el.place.split(",")[0].replace(/,/i, "-"));
 			mainTab.appendChild(tab);
 		});
 
 		await Promise.all(promises);
-	
+
+		mainTab.removeChild(mainTab.firstElementChild);
 		if (type === "initial") {
 			mainTab.firstElementChild.classList.add("active");
+			document.querySelector(
+				"html"
+			).style.background = `url(${mainTab.firstElementChild.dataset.bg})`;
 		} else {
 			mainTab.lastElementChild.classList.add("active");
+			document.querySelector(
+				"html"
+			).style.background = `url(${mainTab.firstElementChild.dataset.bg})`;
 		}
-	
+
 		if (type === "initial") {
 			addPills("first");
 		} else {

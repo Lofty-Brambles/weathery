@@ -14,7 +14,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin(
 			{
-				title: "To-do!",
+				title: "Weathery!",
 				meta: {
 					viewport: "width=device-width, initial-scale=1, shrink-to-fit=no"
 				}

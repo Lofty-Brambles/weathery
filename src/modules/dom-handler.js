@@ -1,4 +1,5 @@
 import swal from "sweetalert";
+import Image from "../assets/loading.gif";
 import { geocodingData, loadContent, loadStorage } from "./local-store";
 import { add, checkAvail, make } from "./util";
 
@@ -9,8 +10,9 @@ export default function domHandlers() {
 
 		list.style.justifyContent = "center";
 		const li = make("li");
+		li.style.justifyContent = "center";
 		const image = make("img");
-		image.src = "./../assets/loading.jpg";
+		image.src = Image;
 		li.appendChild(image);
 		list.appendChild(li);
 
@@ -26,18 +28,18 @@ export default function domHandlers() {
 					cities.push({
 						place: e.display_name,
 						lat: e.lat,
-						lon: e.lon
+						lon: e.lon,
 					});
 					localStorage.setItem("cities", JSON.stringify(cities));
 					loadContent("last");
 					swal({
 						title: "The city was added to your list!",
-						icon: "info"
+						icon: "info",
 					});
 				} else {
 					swal({
 						title: "Hey, you already have that city!",
-						icon: "error"
+						icon: "error",
 					});
 				}
 			});
@@ -62,7 +64,7 @@ export default function domHandlers() {
 				displaySearchResults();
 			}
 		});
-		searchBtn.addEventListener("keydown", e => {
+		input.addEventListener("keydown", e => {
 			const val = document.querySelector(".input-div > input");
 			if (e.code === "Enter" && /[a-zA-Z]+/i.test(val)) {
 				displaySearchResults();
@@ -94,6 +96,39 @@ export default function domHandlers() {
 		});
 		return main;
 	}
+
+	function setting() {
+		const text = make("div");
+		text.textContent = "Turn on Imperial Units?";
+
+		const input = make("input");
+		input.setAttribute("type", "checkbox");
+		input.addEventListener("click", () => {
+			const val = document.querySelector(`input[type="checkbox"]`).value;
+			const res = [];
+			if (val) {
+				res.push("℉", "imperial");
+			} else {
+				res.push("℃", "metric");
+			}
+			localStorage.setItem("unit", JSON.stringify(res));
+			loadContent("initial");
+		});
+
+		const div = make("div");
+		[text, input].forEach(e => {
+			div.appendChild(e);
+		});
+		add(div, "switch");
+		return div;
+	}
+
+	const settings = document.querySelector(".settings");
+	settings.addEventListener("click", () => {
+		swal({
+			content: setting()
+		});
+	});
 
 	const menu = document.querySelector(".menu");
 	menu.addEventListener("click", () => {

@@ -38,7 +38,7 @@ export default function components() {
 		const arrowright = make("div");
 		add(arrowright, "material-symbols-outlined", "arrowright");
 		arrowright.textContent = "navigate_next";
-		
+
 		const pillbar = make("div");
 		add(pillbar, "pill-bar");
 
