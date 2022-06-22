@@ -104,7 +104,7 @@ export default function domHandlers() {
 		const input = make("input");
 		input.setAttribute("type", "checkbox");
 		input.addEventListener("click", () => {
-			const val = document.querySelector(`input[type="checkbox"]`).value;
+			const val = document.querySelector(`input[type="checkbox"]`).checked;
 			const res = [];
 			if (val) {
 				res.push("℉", "imperial");

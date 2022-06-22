@@ -1,7 +1,6 @@
 const webpackCommon = require("./webpack.common");
 const { merge } = require("webpack-merge");
 const miniCssExtractPlugin = require("mini-css-extract-plugin");
-const cleanWebpackPlugin = require("clean-webpack-plugin");
 const cssMinimizerWebpackPlugin = require("css-minimizer-webpack-plugin");
 const terserPlugin = require("terser-webpack-plugin");
 
@@ -24,9 +23,6 @@ module.exports = merge(webpackCommon, {
 	},
 	plugins: [
 		new miniCssExtractPlugin(),
-		new cleanWebpackPlugin({
-			verbose: true
-		})
 	],
 	module: {
 		rules: [
@@ -50,7 +46,7 @@ module.exports = merge(webpackCommon, {
 				use: {
 					loader: "babel-loader",
 					options: {
-						presets: ["@babel/preset-env", { targets: "defaults" }]
+						presets: [["@babel/preset-env", { targets: "defaults" }]]
 					}
 				}
 			}
